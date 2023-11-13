@@ -1,0 +1,78 @@
+#include <deque>
+#include <iostream>
+#include <string>
+#include <vector>
+void SiftUp(std::vector<std::vector<long long int>>& heap, long long int place,
+            std::deque<long long int>& freshmen) {
+  while (place > 1) {
+    long long int place_old = place;
+    place /= 2;
+    if (heap[place_old][0] < heap[place][0]) {
+      std::swap(heap[place_old], heap[place]);
+      std::swap(freshmen[heap[place_old][1]], freshmen[heap[place][1]]);
+    } else {
+      break;
+    }
+  }
+}
+void SiftDown(std::vector<std::vector<long long int>>& heap,
+              long long int place, long long int& final,
+              std::deque<long long int>& freshmen) {
+  while (place * 2 <= final) {
+    long long int place_old = place;
+    if (place * 2 == final) {
+      place *= 2;
+    } else {
+      if (heap[place * 2][0] < heap[place * 2 + 1][0]) {
+        place *= 2;
+      } else {
+        place = place * 2 + 1;
+      }
+    }
+    if (heap[place_old][0] > heap[place][0]) {
+      std::swap(heap[place_old], heap[place]);
+      std::swap(freshmen[heap[place_old][1]], freshmen[heap[place][1]]);
+    } else {
+      break;
+    }
+  }
+}
+int main() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(0);
+  std::vector<std::vector<long long int>> heap(1);
+  long long int number;
+  std::cin >> number;
+  std::deque<long long int> quieries(number + 1);
+  long long int size = 0;
+  for (long long int i = 1; i <= number; i++) {
+    std::string key;
+    std::cin >> key;
+    if (key == "insert") {
+      long long int newnumber;
+      std::cin >> newnumber;
+      quieries[i] = size + 1;
+      size++;
+      heap.push_back({newnumber, i});
+      SiftUp(heap, size, quieries);
+    }
+    if (key == "getMin") {
+      std::cout << heap[1][0] << '\n';
+    }
+    if (key == "extractMin") {
+      std::swap(heap[1], heap[size]);
+      std::swap(quieries[heap[1][1]], quieries[heap[size][1]]);
+      heap.pop_back();
+      size--;
+      SiftDown(heap, 1, size, quieries);
+    }
+    if (key == "decreaseKey") {
+      long long int place;
+      std::cin >> place;
+      long long int delta;
+      std::cin >> delta;
+      heap[quieries[place]][0] -= delta;
+      SiftUp(heap, quieries[place], quieries);
+    }
+  }
+}
