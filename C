@@ -1,0 +1,52 @@
+#include <deque>
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main() {
+  int goblins;
+  std::cin >> goblins;
+  std::deque<int> queueleft(0);
+  int leftlen = 0;
+  std::deque<int> queueright(0);
+  int rightlen = 0;
+  for (int i = 1; i <= goblins; i++) {
+    char key;
+    std::cin >> key;
+    if (key == '+') {
+      int goblin;
+      std::cin >> goblin;
+      rightlen++;
+      queueright.push_back(goblin);
+      if (rightlen > leftlen) {
+        queueleft.push_back(queueright.front());
+        leftlen++;
+        queueright.pop_front();
+        rightlen--;
+      }
+    }
+    if (key == '*') {
+      int goblin;
+      std::cin >> goblin;
+      queueright.push_front(goblin);
+      rightlen++;
+      if (rightlen > leftlen) {
+        queueleft.push_back(queueright.front());
+        leftlen++;
+        queueright.pop_front();
+        rightlen--;
+      }
+    }
+    if (key == '-') {
+      std::cout << queueleft.front() << '\n';
+      queueleft.pop_front();
+      leftlen--;
+      if (rightlen > leftlen) {
+        queueleft.push_back(queueright.front());
+        leftlen++;
+        queueright.pop_front();
+        rightlen--;
+      }
+    }
+  }
+}
